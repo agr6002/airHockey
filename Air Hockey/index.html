@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Air Hockey</title>
+        <style>
+            body, html{
+                width:100%;
+                height:100%;
+            }
+            body{
+                margin:0;
+                overflow: hidden;
+            }
+            #canBG{
+                background-color:azure;
+                position:absolute;
+                left:0;
+                top:0;
+            }
+            #canFG{
+                position:absolute;
+                left:0;
+                top:0;
+            }
+            #canPuck{
+                position:absolute;
+                left:0;
+                top:0; 
+            }
+
+        </style>
+    </head>
+    <body>
+        <canvas id="canBG" width="800" height="800" ></canvas>
+        <canvas id="canPuck" width="800" height="800" ></canvas>
+        <canvas id="canFG" width="800" height="800" ></canvas>
+        <script>
+            var canBG = document.getElementById("canBG");
+            var canFG = document.getElementById("canFG");
+            var canPuck = document.getElementById("canPuck");
+            var conBG= canBG.getContext("2d");
+            var conFG= canFG.getContext("2d");
+            var conPuck= canPuck.getContext("2d");
+            var bcr;
+            var speedX = 15;
+            var speedY = 5;
+            canFG.addEventListener("mousemove", handleMM);
+            window.onresize = resize;
+            resize();
+            requestAnimationFrame(drawPuck);
+            
+            function resize() {
+                bcr = document.body.getBoundingClientRect();
+                canFG.height=bcr.height;
+                canFG.width= bcr.width;
+                canBG.height= bcr.height;
+                canBG.width= bcr.width;
+                canPuck.height= bcr.height;
+                canPuck.width= bcr.width;
+                redrawAll();
+            } 
+            function handleMM(e){
+                drawLeftPaddle(e.clientX, e.clientY);
+            }
+            function drawDots(){
+                for (var y = 0; y < bcr.height; y += 25){
+                    for (var x = 0; x < bcr.width; x += 25){
+                        conBG.beginPath();
+                        conBG.arc(x, y, 1, 0, Math.PI * 2);
+                        conBG.fill();
+                    } 
+                }
+            }
+            function drawlines (){
+                conBG.beginPath();
+                conBG.moveTo(bcr.width /2, 0);
+                conBG.lineTo(bcr.width/2, bcr.height );
+                conBG.stroke();
+
+            }
+            function drawCircles(){
+                conBG.lineWidth = 5;
+                conBG.strokeStyle = "royalBlue"
+                conBG.beginPath();
+                conBG.arc(bcr.width / 2, bcr.height / 2, bcr.height / 4, 0, Math.PI * 2, false);
+                conBG.stroke();
+                conBG.beginPath();
+                conBG.arc(bcr.width / 4, bcr.height / 5, bcr.height / 7, 0, Math.PI * 2, true);
+                conBG.stroke();
+                conBG.beginPath();
+                conBG.arc(bcr.width / 4, bcr.height / 1.28, bcr.height / 7, 0, Math.PI * 2, true);
+                conBG.stroke();
+                conBG.beginPath();
+                conBG.arc(bcr.width / 1.31, bcr.height / 1.28, bcr.height / 7, 0, Math.PI * 2, true);
+                conBG.stroke();
+                conBG.beginPath();
+                conBG.arc(bcr.width / 1.31, bcr.height / 5, bcr.height / 7, 0, Math.PI * 2, true);
+                conBG.stroke();
+                conBG.strokeStyle = "black"
+                conBG.beginPath();
+                conBG.arc(bcr.width /10000, bcr.height / 2, bcr.height / 5, Math.PI * 0.5, Math.PI * 1.5, true);
+                conBG.stroke();
+                conBG.beginPath();
+                conBG.arc(bcr.width / 1, bcr.height / 2, bcr.height / 5, Math.PI * 0.5, Math.PI * 1.5, false);
+                conBG.stroke();
+            }
+            function drawRightPaddle(){
+                conBG.fillStyle = "red";
+                conBG.beginPath();
+                conBG.arc(bcr.width / 1.20, bcr.height / 2, bcr.height / 10, 0, Math.PI * 2, false);
+                conBG.fill();
+            }
+            function drawLeftPaddle(lX,lY){
+                if (lX > bcr.width /2) {
+                    lX= bcr.width /2;
+                } 
+                conFG.clearRect( 0, 0, bcr.width, bcr.height);
+                conFG.fillStyle = "red";
+                conFG.beginPath();
+                conFG.arc(lX, lY, bcr.height / 10, 0, Math.PI * 2, false);
+                conFG.fill();  
+            }
+            function drawPuck(pX, pY) {
+                
+                pX = pX + speedX;
+                pY = pY + speedY;
+                if (pX > bcr.width) { 
+                    
+                    pX =bcr.width;
+                    speedX = - speedX;
+                }
+                if (pY > bcr.height) {
+                    
+                    pY = bcr.height;
+                    speedY = -speedY;  
+                }
+                if ( pX < 0) {
+                    
+                    pX = 0;
+                    speedX = speedX;
+                }
+                if (pY < 0) {
+                    pY = 0;
+                    speedY = -speedY; 
+                }
+
+                conPuck.fillStyle = "orange";
+                conPuck.beginPath();
+                conPuck.arc( pX, pY, bcr.height/ 12, 0, Math.PI * 2, true);
+                conPuck.fill();
+                requestAnimationFrame(drawPuck);
+            }
+            function redrawAll(){
+                conBG.clearRect(0,0, bcr.width, bcr.height);
+                drawlines();
+                drawCircles();
+                drawDots();
+                drawLeftPaddle();
+                drawPuck();
+                drawRightPaddle();
+            }
+        </script>  
+    </body>
+</html>
